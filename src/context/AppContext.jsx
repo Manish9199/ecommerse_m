@@ -26,6 +26,10 @@ export const AppContextProvider = ({ children }) => {
       setIsSeller(data.success);
     } catch (error) {
       console.error("Seller check failed:", error);
+      // Don't show error for 401 (not logged in) - this is normal
+      if (error.response?.status !== 401) {
+        console.error("Unexpected seller auth error:", error);
+      }
       setIsSeller(false);
     }
   };
@@ -38,11 +42,16 @@ export const AppContextProvider = ({ children }) => {
         setUser(data.user);
         setCartItems(data.user.cart || {});
       } else {
-        toast.error(data.message);
+        // Don't show error for normal "not logged in" state
+        setUser(null);
       }
     } catch (error) {
       console.error("User fetch failed:", error);
-      toast.error(error.message);
+      // Don't show error toast for 401 (not logged in) - this is normal
+      if (error.response?.status !== 401) {
+        toast.error("Failed to check user status");
+      }
+      setUser(null);
     }
   };
 
@@ -57,7 +66,7 @@ export const AppContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Product fetch failed:", error);
-      toast.error(error.message);
+      toast.error("Failed to load products. Please try again later.");
     }
   };
 
@@ -116,7 +125,11 @@ export const AppContextProvider = ({ children }) => {
         const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/cart/update`, { cartItems });
         if (!data.success) toast.error(data.message);
       } catch (error) {
-        toast.error(error.message);
+        console.error("Cart update failed:", error);
+        // Don't show error for 401 (user logged out) - this is normal
+        if (error.response?.status !== 401) {
+          toast.error("Failed to update cart");
+        }
       }
     };
     updateCart();
