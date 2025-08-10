@@ -1,72 +1,81 @@
-import toast from "react-hot-toast";
-import { useAppContext } from "../../context/AppContext";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+
 const SellerLogin = () => {
-  const { isSeller, setIsSeller, navigate, axios } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  useEffect(() => {
-    if (isSeller) {
-      navigate("/seller");
-    }
-  }, [isSeller]);
-  const handleSubmit = async (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
-      e.preventDefault();
-      const { data } = await axios.post("/api/seller/login", {
-        email,
-        password,
-      });
-      if (data.success) {
-        setIsSeller(true);
-        navigate("/seller");
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/seller/login`,
+        { email, password },
+        {
+          withCredentials: true, // important for cookie-based auth
+        }
+      );
+
+      console.log("Login successful:", data);
+      alert("Seller login successful!");
+      // Redirect to seller dashboard
+      window.location.href = "/seller-dashboard";
+
+    } catch (err) {
+      console.error("Login error:", err);
+      if (err.response && err.response.data?.message) {
+        setError(err.response.data.message);
       } else {
-        toast.error(data.message);
+        setError("Something went wrong. Please try again.");
       }
-    } catch (error) {
-      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
-  return (
-    !isSeller && (
-      <div className="fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center  bg-black/50 text-gray-600">
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white"
-        >
-          <p className="text-2xl font-medium m-auto">
-            <span className="text-indigo-500">Seller</span>
-            Login
-          </p>
 
-          <div className="w-full ">
-            <p>Email</p>
-            <input
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
-              type="email"
-              required
-            />
-          </div>
-          <div className="w-full ">
-            <p>Password</p>
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
-              type="password"
-              required
-            />
-          </div>
-          <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-            Login
-          </button>
-        </form>
-      </div>
-    )
+  return (
+    <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
+      <h2>Seller Login</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div style={{ marginTop: "10px" }}>
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {error && (
+          <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ marginTop: "15px", padding: "8px 16px" }}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
+    </div>
   );
 };
+
 export default SellerLogin;
