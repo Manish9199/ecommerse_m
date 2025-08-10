@@ -6,12 +6,29 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const { data } = await axios.post(`/api/user/${state}`, {
+
+      if (loading) return; // Prevent multiple submissions
+
+      // Validate inputs
+      if (!email || !password) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
+      if (state === "register" && !name) {
+        toast.error("Please enter your name");
+        return;
+      }
+
+      setLoading(true);
+
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/${state}`, {
         name,
         email,
         password,
@@ -25,7 +42,14 @@ const Auth = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log("Error in models page is " , error)
+      console.error("Auth error:", error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -98,8 +122,11 @@ const Auth = () => {
             </span>
           </p>
         )}
-        <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-          {state === "register" ? "Create Account" : "Login"}
+        <button
+          disabled={loading}
+          className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Processing..." : (state === "register" ? "Create Account" : "Login")}
         </button>
       </form>
     </div>
