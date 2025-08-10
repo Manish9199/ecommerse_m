@@ -24,7 +24,7 @@ const SellerLogin = () => {
       console.log("Login successful:", data);
       alert("Seller login successful!");
       // Redirect to seller dashboard
-      window.location.href = "/seller-dashboard";
+      window.location.href = "/seller";
 
     } catch (err) {
       console.error("Login error:", err);
