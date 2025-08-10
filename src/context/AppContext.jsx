@@ -26,7 +26,7 @@ export const AppContextProvider = ({ children }) => {
         setIsSeller(false);
       }
     } catch (error) {
-      setIsSeller(false);
+      setIsSeller(false ,error);
     }
   };
 
