@@ -14,7 +14,7 @@ const SellerLogin = () => {
 
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/seller/login`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/seller/login`,
         { email, password },
         {
           withCredentials: true, // important for cookie-based auth
