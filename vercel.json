@@ -7,6 +7,10 @@
         {
             "source": "/images/:path*",
             "destination": "https://backend-first-ecommerce.onrender.com/images/:path*"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/"
         }
     ]
 }
