@@ -13,13 +13,7 @@ const SellerLogin = () => {
     setError("");
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/seller/login`,
-        { email, password },
-        {
-          withCredentials: true, // important for cookie-based auth
-        }
-      );
+      const { data } = await axios.post(`/api/seller/login`, { email, password }, { withCredentials: true });
 
       console.log("Login successful:", data);
       alert("Seller login successful!");

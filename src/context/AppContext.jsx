@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-// ✅ Axios global config from .env
+// ✅ Axios global config (use same-origin proxy via Vercel rewrites)
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = "/";
 
 export const AppContext = createContext(null);
 
@@ -22,7 +22,7 @@ export const AppContextProvider = ({ children }) => {
   // ✅ Check seller auth status
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/seller/is-auth`);
+      const { data } = await axios.get(`/api/seller/is-auth`);
       setIsSeller(data.success);
     } catch (error) {
       console.error("Seller check failed:", error);
@@ -37,7 +37,7 @@ export const AppContextProvider = ({ children }) => {
   // ✅ Fetch user auth status, data, and cart
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user/is-auth`);
+      const { data } = await axios.get(`/api/user/is-auth`);
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cart || {});
@@ -58,7 +58,7 @@ export const AppContextProvider = ({ children }) => {
   // ✅ Fetch products
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/list`);
+      const { data } = await axios.get(`/api/product/list`);
       if (data.success) {
         setProducts(data.products);
       } else {
@@ -122,7 +122,7 @@ export const AppContextProvider = ({ children }) => {
     if (!user) return;
     const updateCart = async () => {
       try {
-        const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/cart/update`, { cartItems });
+        const { data } = await axios.post(`/api/cart/update`, { cartItems });
         if (!data.success) toast.error(data.message);
       } catch (error) {
         console.error("Cart update failed:", error);

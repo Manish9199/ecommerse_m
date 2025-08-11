@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "https://backend-first-ecommerce.onrender.com/api/:path*"
+        },
+        {
+            "source": "/images/:path*",
+            "destination": "https://backend-first-ecommerce.onrender.com/images/:path*"
+        }
+    ]
+}
